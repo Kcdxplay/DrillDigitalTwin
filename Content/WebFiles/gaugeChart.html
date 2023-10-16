@@ -1,0 +1,89 @@
+<head>
+    <style>
+        .main-chart{
+            width: 350px;
+            height: 350px;
+        }
+    </style>
+
+    <div id="gauge-chart" class="main-chart" ></div>
+</head>
+
+<script src="./Echarts/echarts.min.js"></script>
+<script>
+    let chartName = "压力表";
+    let max = 100;
+    
+
+    var object = echarts.init(document.getElementById("gauge-chart"));
+    var option ={
+        series:[{
+            type: 'gauge',
+            max:max,
+            progress: {
+                show: true,
+                roundCap:true,
+                width: 18
+            },
+            itemStyle: {
+                color: '#58D9F9',
+                shadowColor: 'rgba(0,138,255,0.45)',
+                shadowBlur: 10,
+                shadowOffsetX: 2,
+                shadowOffsetY: 2
+            },
+            axisLine: {
+                roundCap:true,
+                lineStyle: {
+                width: 20
+                }
+            },
+            splitLine:{
+                show:false,
+            },
+            axisLabel: {
+                distance: 10,
+                color: '#bbb',
+                fontSize: 15
+            },
+            title:{
+                fontSize: 40,
+                offsetCenter: [0, '70%'],
+                color:"#fff",            
+            },
+            detail: {
+                formatter: '{value}',
+                fontSize: 40,
+                color:"#fff",
+            },
+            anchor: {
+                show: true,
+                showAbove: true,
+                size: 25,
+                itemStyle: {
+                borderWidth: 10
+                }
+            },
+            data:[{
+                value: 2000,
+                name: chartName,
+            }]
+        }]
+    }
+
+    object.setOption(option,true);
+
+    function SetMax(newMax){
+        option.series[0].max = newMax;
+        object.setOption(option,true);
+    }
+    function SetChartName(newName){
+        option.series[0].data[0].name = newName;
+        object.setOption(option,true);
+    }
+    function UpdateData(newData){
+        option.series[0].data[0].value=newData;
+        object.setOption(option,true);
+    }
+
+</script>
