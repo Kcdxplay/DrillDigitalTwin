@@ -2,6 +2,9 @@
 
 
 #include "DataDistributeComponent.h"
+#include "CSVReader.h"
+#include "../../../../../../../Source/Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
+#include <vector>
 
 // Sets default values for this component's properties
 UDataDistributeComponent::UDataDistributeComponent()
@@ -19,8 +22,11 @@ void UDataDistributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	FString FilePath = UKismetSystemLibrary::GetProjectContentDirectory();
+	FilePath.Append("WebFiles/");
+	FilePath.Append(FileName);
+	CSVInstance = new CSVReader(TCHAR_TO_UTF8(*FilePath));
+
 }
 
 
@@ -37,3 +43,26 @@ void UDataDistributeComponent::DispatchData(FDrillDataStruct data)
 	OnNewData.Broadcast(data);
 }
 
+bool UDataDistributeComponent::BuffAllData()
+{
+	if (CSVInstance->BuffDataFromFile())
+	{
+		const std::vector<CSVReader::DrillRowData>* TEMPDrillRowDatas = CSVInstance->GetAllBuffedData();
+
+		if (ensure(TEMPDrillRowDatas != NULL))
+		{
+			bIsDataLoadFinished = false;
+			BuffedDrillData.Empty();
+			std::for_each(TEMPDrillRowDatas->begin(), TEMPDrillRowDatas->end(), [this](CSVReader::DrillRowData Data) {BuffedDrillData.Add({ Data.presure,Data.torque,Data.speed }); });
+		}
+
+		bIsDataLoadFinished = true;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	return false;
+}

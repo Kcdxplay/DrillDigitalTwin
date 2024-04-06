@@ -4,7 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "CSVReader.h"
 #include "DataDistributeComponent.generated.h"
+
+
+
+class CSVReader;
 
 USTRUCT(BlueprintType)
 struct FDrillDataStruct
@@ -33,6 +38,12 @@ public:
 	// Sets default values for this component's properties
 	UDataDistributeComponent();
 
+	UFUNCTION(BlueprintCallable)
+	void DispatchData(FDrillDataStruct data);
+
+	UFUNCTION(BlueprintCallable)
+	bool BuffAllData();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -41,11 +52,22 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable)
-	void DispatchData(FDrillDataStruct data);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnNewData OnNewData;
 
 
+
+protected:
+	bool bIsDataLoadFinished = false;
+
+	CSVReader* CSVInstance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FileSetting");
+	FString FileName;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FDrillDataStruct> BuffedDrillData;
+
+	FTimerHandle FileLoadTimeHandle;
 };
