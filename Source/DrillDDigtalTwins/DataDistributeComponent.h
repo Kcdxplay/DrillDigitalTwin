@@ -41,6 +41,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DispatchData(FDrillDataStruct data);
 
+	
+	UFUNCTION(BlueprintCallable)
+	void StartBuffData();
+
+	UFUNCTION(BlueprintCallable)
+	void StopBuffData();
+
 	UFUNCTION(BlueprintCallable)
 	bool BuffAllData();
 
@@ -62,6 +69,9 @@ protected:
 	bool bIsDataLoadFinished = false;
 
 	CSVReader* CSVInstance;
+
+	UPROPERTY(BlueprintReadWrite)
+	int CurrentDataIndex;
 
 	UPROPERTY(EditDefaultsOnly, Category = "FileSetting");
 	FString FileName;

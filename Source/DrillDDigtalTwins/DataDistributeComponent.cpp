@@ -26,7 +26,6 @@ void UDataDistributeComponent::BeginPlay()
 	FilePath.Append("WebFiles/");
 	FilePath.Append(FileName);
 	CSVInstance = new CSVReader(TCHAR_TO_UTF8(*FilePath));
-
 }
 
 
@@ -41,6 +40,38 @@ void UDataDistributeComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UDataDistributeComponent::DispatchData(FDrillDataStruct data)
 {
 	OnNewData.Broadcast(data);
+}
+
+void UDataDistributeComponent::StartBuffData()
+{
+	if (bIsDataLoadFinished)
+	{
+		return;
+	}
+
+	bIsDataLoadFinished = true;
+	try
+	{
+		if (BuffAllData())
+		{
+			CurrentDataIndex = 0;
+			GetOwner()->GetWorldTimerManager().SetTimer(FileLoadTimeHandle, this, &UDataDistributeComponent::StartBuffData, 60.f);
+		}
+		else
+		{
+			GetOwner()->GetWorldTimerManager().SetTimer(FileLoadTimeHandle, this, &UDataDistributeComponent::StartBuffData, 5.f);
+		}
+	}
+	catch (const std::exception&)
+	{
+
+	}
+	bIsDataLoadFinished = false;
+}
+
+void UDataDistributeComponent::StopBuffData()
+{
+	GetOwner()->GetWorldTimerManager().ClearTimer(FileLoadTimeHandle);
 }
 
 bool UDataDistributeComponent::BuffAllData()
